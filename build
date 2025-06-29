@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# IMPORTANT!!!
+# This script ONLY works on Linux/BSD and may work on macOS. If you are on Windows, use the "build.ps1" instead
+
+echo -e "\e[32mBuilding SimpleWeatherTUI for Linux (x64)...\e[0m"
+dotnet publish -c Release --self-contained true -r linux-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
+echo -e "\e[32mBuilding SimpleWeatherTUI for Linux (arm64)...\e[0m"
+dotnet publish -c Release --self-contained true -r linux-arm64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
+echo -e "\e[32mBuilding SimpleWeatherTUI for Windows (x64)...\e[0m"
+dotnet publish -c Release --self-contained true -r win-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
+echo -e "\e[32mBuilding SimpleWeatherTUI for Windows (arm64)...\e[0m"
+dotnet publish -c Release --self-contained true -r win-arm64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
+echo -e "\e[32mBuilding SimpleWeatherTUI for macOS (x64)...\e[0m"
+dotnet publish -c Release --self-contained true -r osx-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
+echo -e "\e[32mBuilding SimpleWeatherTUI for macOS (arm64)...\e[0m"
+dotnet publish -c Release --self-contained true -r osx-arm64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ".\publish\linux-x64"
