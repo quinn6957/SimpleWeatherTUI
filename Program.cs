@@ -8,15 +8,16 @@ namespace SimpleWeatherTUI
     {
         public static void Main(string[] args)
         {
-            SpectreUIHelper.UITitle("simple weather tui");
+            UIHelper.UITitle("simple weather tui");
 
             string[] menuOptions = {
             "get weather based on your ip.",
             "get weather based on a city.",
+            "TEST_IPGEOHELPER_GETIP", // for testing purposes
             "exit"
         };
 
-            string selectedOption = SpectreUIHelper.UISelection(
+            string selectedOption = UIHelper.UISelection(
                 "in what way would you like your weather?",
                 "[grey]use [arrow up/down] to navigate, [enter] to select[/]",
                 menuOptions
@@ -25,35 +26,53 @@ namespace SimpleWeatherTUI
 
             if (selectedOption == "exit")
             {
-                SpectreUIHelper.UIMessage("okay, closing.");
+                UIHelper.UIMessage("okay, closing.");
                 System.Environment.Exit(0);
             }
             else if (selectedOption == "get weather based on your ip.")
             {
                 try
                 {
-                    SpectreUIHelper.UIMessage("attempting to get weather from your ip address...");
+                    UIHelper.UIMessage("attempting to get weather from your ip address...");
                     NotYetReady();
                 }
                 catch (Exception ex)
                 {
-                    SpectreUIHelper.UIException(ex);
+                    UIHelper.UIException(ex);
                 }
             }
             else if (selectedOption == "get weather based on a city.")
             {
 
-                var SelectedCity = SpectreUIHelper.UITextInput("what city in what country would you like weather for?\n use the two letter code for the country you want or else it won't work, sorry.\n");
+                var SelectedCity = UIHelper.UITextInput("what city in what country would you like weather for?\n use the two letter code for the country you want or else it won't work, sorry.\n");
 
                 try
                 {
-                    SpectreUIHelper.UIMessage($"attempting to get weather for {SelectedCity}...");
+                    UIHelper.UIMessage($"attempting to get weather for {SelectedCity}...");
                     NotYetReady();
                 }
                 catch (Exception ex)
                 {
-                    SpectreUIHelper.UIException(ex);
+                    UIHelper.UIException(ex);
                 }
+            }
+            else if (selectedOption == "TEST_IPGEOHELPER_GETIP")
+            {
+                UIHelper.UIMessage("attempting to get your public ip address...");
+                try
+                {
+                    var ip = IPGeoHelper.GetPublicIP().GetAwaiter().GetResult();
+                    UIHelper.UIMessage($"your public ip address is: [bold green]{ip}[/]");
+                }
+                catch (Exception ex)
+                {
+                    UIHelper.UIException(ex, "failed to get your public ip address");
+                }
+            }
+            else
+            {
+                UIHelper.UIMessage("unrecognized option, exiting.");
+                System.Environment.Exit(1);
             }
         }
 
