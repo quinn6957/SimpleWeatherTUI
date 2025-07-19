@@ -3,7 +3,7 @@ using System;
 
 namespace SimpleWeatherTUI
 {
-    public static class UIHelper
+    public static class UI
     {
         public static void UITitle(string title)
         {
