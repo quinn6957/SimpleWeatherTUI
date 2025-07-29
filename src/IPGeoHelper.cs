@@ -14,7 +14,7 @@ namespace SimpleWeatherTUI
             return ip.Trim();
         }
 
-        public static string GetGeolocation(string ip)
+        public static Tuple<double, double, string, string> GetGeolocation(string ip)
         {
             DotEnv.Load();
             var envVars = DotEnv.Read();
@@ -29,9 +29,23 @@ namespace SimpleWeatherTUI
             var response = httpClient.GetStringAsync($"https://api.ipgeolocation.io/ipgeo?apiKey={apiKey}&ip={ip}").GetAwaiter().GetResult();
             // parse the json response to get the city and country_name fields
             var json = System.Text.Json.JsonDocument.Parse(response);
-            var city = json.RootElement.GetProperty("city").GetString();
-            var country = json.RootElement.GetProperty("country_code2").GetString();
-            return $"{city},{country}";
+            double? latitude = null;
+            double? longitude = null;
+            if (json.RootElement.TryGetProperty("latitude", out var latElem) && latElem.TryGetDouble(out var latVal))
+            {
+                latitude = latVal;
+            }
+            if (json.RootElement.TryGetProperty("longitude", out var lonElem) && lonElem.TryGetDouble(out var lonVal))
+            {
+                longitude = lonVal;
+            }
+            if (latitude == null || longitude == null)
+            {
+                throw new Exception("Could not retrieve latitude and/or longitude from the response.");
+            }
+            string city = json.RootElement.GetProperty("city").GetString();
+            string country = json.RootElement.GetProperty("country_name").GetString();
+            return Tuple.Create(latitude.Value, longitude.Value, city, country);
         }
 
     }

@@ -1,12 +1,16 @@
+using System.Net.Http.Json;
 using dotenv;
 using dotenv.net;
+using Spectre.Console;
 
 namespace SimpleWeatherTUI
 {
 
     public static class WeatherService
     {
-        public static async Task<string> GetWeatherDataAsync(string latitude, string longitude)
+        private static readonly HttpClient client = new();
+
+        public static async Task<string> GetWeatherDataAsync(double latitude, double longitude)
         {
             DotEnv.Load();
             var envVars = DotEnv.Read();
@@ -24,13 +28,15 @@ namespace SimpleWeatherTUI
         {
             var ip = await IPGeoHelper.GetPublicIP();
             var geolocation = IPGeoHelper.GetGeolocation(ip);
-            var coordinates = geolocation.Split(',');
-            if (coordinates.Length != 2)
+            if (geolocation == null)
             {
-                throw new Exception("Invalid geolocation data.");
+                throw new Exception("Could not retrieve geolocation for the IP address.");
             }
-            var latitude = coordinates[0];
-            var longitude = coordinates[1];
+
+            double latitude = geolocation.Item1;
+            double longitude = geolocation.Item2;
+
+            UI.UIPlainMessage($"DEBUG: IP: {ip}, Latitude: {latitude}, Longitude: {longitude}");
             return await GetWeatherDataAsync(latitude, longitude);
         }
     }

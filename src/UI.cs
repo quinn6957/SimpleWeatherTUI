@@ -28,7 +28,11 @@ namespace SimpleWeatherTUI
             AnsiConsole.MarkupLine(message);
         }
 
-        // You can add more helper methods here, for example, for text input:
+        public static void UIPlainMessage(string message)
+        {
+            AnsiConsole.WriteLine(message);
+        }
+
         public static string UITextInput(string prompt, string? defaultValue = null)
         {
             var promptInstance = new TextPrompt<string>(prompt)

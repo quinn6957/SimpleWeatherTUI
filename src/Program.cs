@@ -7,94 +7,44 @@ namespace SimpleWeatherTUI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            UI.UITitle("simple weather tui");
+            var title = new Rule("simple weather tui");
 
-            string[] menuOptions = {
-            "get weather based on your ip.",
-            "get weather based on a city.",
-            "TEST_IPGEOHELPER_GETIP", // for testing purposes
-            "TEST_IPGEOHELPER_GETGEOLOCATION", // for testing purposes
-            "exit"
-        };
+            var table = new Table().Centered();
+            table.ShowFooters();
+            var ipAddress = IPGeoHelper.GetPublicIP().GetAwaiter().GetResult();
+            var coordinates = IPGeoHelper.GetGeolocation(ipAddress);
 
-            string selectedOption = UI.UISelection(
-                "in what way would you like your weather?",
-                "[grey]use [arrow up/down] to navigate, [enter] to select[/]",
-                menuOptions
-            );
-
-
-            if (selectedOption == "exit")
+            if (coordinates != null)
             {
-                UI.UIMessage("okay, closing.");
-                System.Environment.Exit(0);
-            }
-            else if (selectedOption == "get weather based on your ip.")
-            {
-                try
-                {
-                    UI.UIMessage("attempting to get weather from your ip address...");
-                    NotYetReady();
-                }
-                catch (Exception ex)
-                {
-                    UI.UIException(ex);
-                }
-            }
-            else if (selectedOption == "get weather based on a city.")
-            {
+                // The latitude and longitude used from 
+                double latitude = coordinates.Item1;
+                double longitude = coordinates.Item2;
 
-                var SelectedCity = UI.UITextInput("what city in what country would you like weather for?\n use the two letter code for the country you want or else it won't work, sorry.\n");
+                CurrentWeather weather = await WeatherService.GetWeatherDataAsync(latitude, longitude); // Get current weather
 
-                try
+
+                // Area where the actual code (post-ZIP code and weather fetching) is.
+                if (weather != null)
                 {
-                    UI.UIMessage($"attempting to get weather for {SelectedCity}...");
-                    NotYetReady();
-                }
-                catch (Exception ex)
-                {
-                    UI.UIException(ex);
+                    AnsiConsole.Clear();
+                    AnsiConsole.Write(title);
+                    var LocationBanner = new Rule("[paleturquoise4]Weather information for " + coordinates.Item3 + ", " + coordinates.Item4 + "[/]\n");
+                    LocationBanner.Justification = Justify.Center;
+                    AnsiConsole.Write(LocationBanner);
+                    table.Border = TableBorder.MinimalHeavyHead;
+                    // Table Containing the conditions...
+                    table.AddColumn("Current Conditions");
+                    table.AddColumn("Extra Details");
+                    table.AddRow($"[bold]{weather.ShortForecast} ({weather.DetailedForecast})[/]", $"Temp: {weather.Temperature}{weather.TemperatureUnit}\nFeels Like: {weather.FeelsLike}{weather.TemperatureUnit}\nHumidity: {weather.Humidity}%\nWind Speed: {weather.WindSpeed} mph");
+                    AnsiConsole.Write(table);
+                    var DateFooter = new Rule("[paleturquoise4 dim]Requested at " + TimeConvert.FormatDateTime(weather.Time) + "[/]");
+                    DateFooter.Justification = Justify.Center;
+                    AnsiConsole.Write(DateFooter);
+
                 }
             }
-            else if (selectedOption == "TEST_IPGEOHELPER_GETIP")
-            {
-                UI.UIMessage("attempting to get your public ip address...");
-                try
-                {
-                    var ip = IPGeoHelper.GetPublicIP().GetAwaiter().GetResult();
-                    UI.UIMessage($"your public ip address is: [bold green]{ip}[/]");
-                }
-                catch (Exception ex)
-                {
-                    UI.UIException(ex, "failed to get your public ip address");
-                }
-            }
-            else if (selectedOption == "TEST_IPGEOHELPER_GETGEOLOCATION")
-            {
-                UI.UIMessage("attempting to get your geolocation based on your public ip address...");
-                try
-                {
-                    var ip = IPGeoHelper.GetPublicIP().GetAwaiter().GetResult();
-                    var geoLocation = IPGeoHelper.GetGeolocation(ip);
-                    UI.UIMessage($"your geolocation is: [bold green]{geoLocation}[/]");
-                }
-                catch (Exception ex)
-                {
-                    UI.UIException(ex, "failed to get your geolocation");
-                }
-            }
-            else
-            {
-                UI.UIMessage("unrecognized option, exiting.");
-                System.Environment.Exit(1);
-            }
-        }
-
-        public static void NotYetReady()
-        {
-            throw new NotImplementedException();
         }
     }
 }
