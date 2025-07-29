@@ -1,20 +1,22 @@
-﻿using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using dotenv.net;
+﻿
+using SimpleWeatherTUI;
 using Spectre.Console;
 
-namespace SimpleWeatherTUI
+namespace SimpleWeaherTUI
 {
     public class Program
     {
         public static async Task Main(string[] args)
         {
-            var title = new Rule("simple weather tui");
-
+            // Title Text
+            var title = new Rule("[cyan bold]Simple Weather TUI[/]\n");
+            title.Justification = Justify.Center;
+            var ip = await GetLocation.GetPublicIP(); // Get public IP address
+            AnsiConsole.Clear();
+            AnsiConsole.Write(title);
+            var coordinates = await GetLocation.GetCoordinatesFromIP(ip);
             var table = new Table().Centered();
             table.ShowFooters();
-            var ipAddress = IPGeoHelper.GetPublicIP().GetAwaiter().GetResult();
-            var coordinates = IPGeoHelper.GetGeolocation(ipAddress);
 
             if (coordinates != null)
             {
@@ -22,7 +24,7 @@ namespace SimpleWeatherTUI
                 double latitude = coordinates.Item1;
                 double longitude = coordinates.Item2;
 
-                CurrentWeather weather = await WeatherService.GetWeatherDataAsync(latitude, longitude); // Get current weather
+                CurrentWeather weather = await GetForecast.GetCurrentWeatherAsync(latitude, longitude); // Get current weather
 
 
                 // Area where the actual code (post-ZIP code and weather fetching) is.

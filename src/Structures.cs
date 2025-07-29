@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SimpleWeatherTUI
 {
     public class WeatherForecast
@@ -15,10 +17,6 @@ namespace SimpleWeatherTUI
         public double WindSpeed { get; set; }
         public int Humidity { get; set; }
 
-        public static implicit operator CurrentWeather(string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class OpenWeatherMapCurrentWeather
@@ -49,4 +47,19 @@ namespace SimpleWeatherTUI
         public double Speed { get; set; }
     }
 
+    // API Response Structure.
+    public class ZipcodeApiResponse
+    {
+        [JsonPropertyName("latitude")]
+        public double Lat { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Lng { get; set; }
+
+        [JsonPropertyName("city")]
+        public required string City { get; set; }
+
+        [JsonPropertyName("country_name")]
+        public required string Country { get; set; }
+    }
 }
