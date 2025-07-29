@@ -27,7 +27,6 @@ namespace SimpleWeaherTUI
                 CurrentWeather weather = await GetForecast.GetCurrentWeatherAsync(latitude, longitude); // Get current weather
 
 
-                // Area where the actual code (post-ZIP code and weather fetching) is.
                 if (weather != null)
                 {
                     AnsiConsole.Clear();
@@ -39,9 +38,11 @@ namespace SimpleWeaherTUI
                     // Table Containing the conditions...
                     table.AddColumn("Current Conditions");
                     table.AddColumn("Extra Details");
-                    table.AddRow($"[bold]{weather.ShortForecast} ({weather.DetailedForecast})[/]", $"Temp: {weather.Temperature}{weather.TemperatureUnit}\nFeels Like: {weather.FeelsLike}{weather.TemperatureUnit}\nHumidity: {weather.Humidity}%\nWind Speed: {weather.WindSpeed} mph");
+                    table.AddRow($"[bold]Conditions: \nTemperature: \nFeels Like: \nHumidity: \nWind Speed:[/]", 
+                                 $"{weather.ShortForecast} ({weather.DetailedForecast})\n{weather.Temperature}{weather.TemperatureUnit}\n{weather.FeelsLike}{weather.TemperatureUnit}\n{weather.Humidity}%\n{weather.WindSpeed} mph");
                     AnsiConsole.Write(table);
                     var DateFooter = new Rule("[paleturquoise4 dim]Requested at " + TimeConvert.FormatDateTime(weather.Time) + "[/]");
+                    var IPFooter = new Rule("[paleturquoise4 dim]IP Address: " + ip + "[/]");
                     DateFooter.Justification = Justify.Center;
                     AnsiConsole.Write(DateFooter);
 
